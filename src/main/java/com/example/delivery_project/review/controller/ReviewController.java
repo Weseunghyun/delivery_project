@@ -1,5 +1,6 @@
 package com.example.delivery_project.review.controller;
 
+import com.example.delivery_project.common.constant.UserSession;
 import com.example.delivery_project.review.dto.ReadReviewResponseDto;
 import com.example.delivery_project.review.dto.ReviewRequestDto;
 import com.example.delivery_project.review.dto.ReviewResponseDto;
@@ -26,13 +27,10 @@ public class ReviewController {
 
     @PostMapping("/{orderId}/review")
     public ResponseEntity<ReviewResponseDto> createReview(
-        HttpServletRequest request,
         @PathVariable Long orderId,
-        @RequestBody ReviewRequestDto reviewRequestDto
+        @RequestBody ReviewRequestDto reviewRequestDto,
+        @SessionAttribute(UserSession.USER_ID) Long userId
     ) {
-
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("userId");
 
         ReviewResponseDto createdReview = reviewService.createReview(
             orderId,
@@ -47,12 +45,8 @@ public class ReviewController {
     public Page<ReadReviewResponseDto> findByAll(
         @PathVariable(name = "storeId") Long storeId,
         @RequestParam(required = false, defaultValue = "0", value = "page") int page,
-        HttpServletRequest request
+        @SessionAttribute(UserSession.USER_ID) Long userId
     ) {
-
-        HttpSession session = request.getSession(false);
-
-        Long userId = (Long) session.getAttribute("userId");
 
         return reviewService.getPostsPage(page, storeId, userId);
     }
@@ -63,12 +57,8 @@ public class ReviewController {
         @RequestParam(required = false, name = "minStar") Long minStar,
         @RequestParam(required = false, name = "maxStar") Long maxStart,
         @RequestParam(required = false, defaultValue = "0", value = "page") int page,
-        HttpServletRequest request
+        @SessionAttribute(UserSession.USER_ID) Long userId
     ) {
-
-        HttpSession session = request.getSession(false);
-
-        Long userId = (Long) session.getAttribute("userId");
 
         return reviewService.getStarPointPage(page, storeId, userId, minStar, maxStart);
     }

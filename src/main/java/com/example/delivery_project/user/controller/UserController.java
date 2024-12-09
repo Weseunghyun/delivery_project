@@ -1,5 +1,6 @@
 package com.example.delivery_project.user.controller;
 
+import com.example.delivery_project.common.constant.UserSession;
 import com.example.delivery_project.user.dto.CreateUserRequestDto;
 import com.example.delivery_project.user.dto.CreateUserResponseDto;
 import com.example.delivery_project.user.dto.DeleteUserRequestDto;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,8 +46,8 @@ UserController {
         HttpSession session = request.getSession(true);
         LoginUserDto dto = userService.login(requestDto);
 
-        session.setAttribute("userId", dto.getUserId());
-        session.setAttribute("userAuthority", dto.getAuthority());
+        session.setAttribute(UserSession.USER_ID, dto.getUserId());
+        session.setAttribute(UserSession.USER_AUTHORITY, dto.getAuthority());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -65,18 +67,12 @@ UserController {
 
     @PatchMapping
     public ResponseEntity<Void> deleteUser(
-        HttpServletRequest request,
-        @RequestBody DeleteUserRequestDto requestDto
+        @RequestBody DeleteUserRequestDto requestDto,
+        @SessionAttribute(UserSession.USER_ID) Long userId
     ) {
-        /*
-        로그인 인증 과정이 이미 인터셉터로 처리되고 있기에
-        따로 컨트롤러 단에서의 검증은 필요가 없다.
-        */
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("userId");
 
         userService.deleteUser(userId, requestDto);
 
-        return null;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

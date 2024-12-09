@@ -1,6 +1,6 @@
 package com.example.delivery_project.common.util;
 
-public class UtilValidation {
+public class ValidationUtil {
 
     public static boolean isValidPasswordFormat(String password) {
 

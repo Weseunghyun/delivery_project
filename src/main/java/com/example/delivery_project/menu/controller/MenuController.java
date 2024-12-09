@@ -1,5 +1,6 @@
 package com.example.delivery_project.menu.controller;
 
+import com.example.delivery_project.common.constant.UserSession;
 import com.example.delivery_project.menu.dto.*;
 import com.example.delivery_project.menu.service.MenuService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,27 +51,24 @@ public class MenuController {
         @PathVariable Long storeId,
         @PathVariable Long menuId,
         @RequestBody UpdateMenuStatusRequestDto requestDto,
-        HttpServletRequest request
+        @SessionAttribute(UserSession.USER_ID) Long userId
     ) {
 
-        HttpSession session = request.getSession(false);
-
-        Long userId = (Long) session.getAttribute("userId");
-
-        CreateMenuResponseDto updateMenu = menuService.updateMenu(storeId, userId, requestDto,
-            menuId);
+        CreateMenuResponseDto updateMenu = menuService.updateMenu(
+            storeId, userId, requestDto, menuId
+        );
 
         return new ResponseEntity<>(updateMenu, HttpStatus.CREATED);
     }
+
     //메뉴 삭제
     @PutMapping("/owners/stores/{storeId}/menus/{menuId}")
     public ResponseEntity<Void> delete(
         @PathVariable Long storeId,
         @PathVariable Long menuId,
-        HttpServletRequest request
+        @SessionAttribute(UserSession.USER_ID) Long userId
     ) {
-        HttpSession session = request.getSession(false);
-        Long userId = (Long) session.getAttribute("userId");
+
         menuService.deleteMenu(storeId, userId, menuId);
 
         return new ResponseEntity<>(HttpStatus.OK);

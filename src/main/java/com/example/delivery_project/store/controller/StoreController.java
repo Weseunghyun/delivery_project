@@ -1,5 +1,6 @@
 package com.example.delivery_project.store.controller;
 
+import com.example.delivery_project.common.constant.UserSession;
 import com.example.delivery_project.store.dto.ReadAllStoreResponseDto;
 import com.example.delivery_project.store.dto.ReadStoreResponseDto;
 import com.example.delivery_project.store.dto.StoreRequestDto;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @RestController
 @RequestMapping("/api")
@@ -37,11 +39,8 @@ public class StoreController {
     @PostMapping("/owners/stores")
     public ResponseEntity<StoreResponseDto> createStore(
         @RequestBody StoreRequestDto storeRequestDto,
-        HttpServletRequest request
+        @SessionAttribute(UserSession.USER_ID) Long userId
     ) {
-
-        HttpSession session = request.getSession();
-        Long userId = (Long) session.getAttribute("userId");
 
         StoreResponseDto createdStore = storeService.createStore(storeRequestDto, userId);
 
@@ -52,11 +51,8 @@ public class StoreController {
     @GetMapping("/stores/{storeId}")
     public ResponseEntity<ReadStoreResponseDto> findStoreById(
         @PathVariable Long storeId,
-        HttpServletRequest request
+        @SessionAttribute(UserSession.USER_AUTHORITY) Authority authority
     ) {
-
-        HttpSession session = request.getSession();
-        Authority authority = (Authority) session.getAttribute("userAuthority");
 
         ReadStoreResponseDto foundStore = storeService.findStoreById(storeId, authority);
 
@@ -69,11 +65,8 @@ public class StoreController {
         @PageableDefault(page = 1)
         @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
         @RequestParam(required = false) String storeName,
-        HttpServletRequest request
+        @SessionAttribute(UserSession.USER_AUTHORITY) Authority authority
     ) {
-
-        HttpSession session = request.getSession();
-        Authority authority = (Authority) session.getAttribute("userAuthority");
 
         Page<ReadAllStoreResponseDto> foundAllStore = storeService.findAllStore(
             pageable, storeName, authority
@@ -87,11 +80,8 @@ public class StoreController {
     public ResponseEntity<StoreResponseDto> updateStore(
         @PathVariable(name = "storeId") Long storeId,
         @RequestBody StoreRequestDto storeRequestDto,
-        HttpServletRequest request
+        @SessionAttribute(UserSession.USER_ID) Long userId
     ) {
-
-        HttpSession session = request.getSession();
-        Long userId = (Long) session.getAttribute("userId");
 
         StoreResponseDto updatedStore = storeService.updateStore(userId, storeId, storeRequestDto);
 
@@ -103,15 +93,13 @@ public class StoreController {
     @PatchMapping("/owners/stores/status/{storeId}")
     public ResponseEntity<UpdateStoreStatusResponseDto> updateStoreStatus(
         @PathVariable(name = "storeId") Long storeId,
-        HttpServletRequest request
+        @SessionAttribute(UserSession.USER_ID) Long userId,
+        @SessionAttribute(UserSession.USER_AUTHORITY) Authority authority
     ) {
 
-        HttpSession session = request.getSession();
-        Long userId = (Long) session.getAttribute("userId");
-        Authority authority = (Authority) session.getAttribute("userAuthority");
-
-        UpdateStoreStatusResponseDto updateStoreStatus = storeService.updateStoreStatus(storeId,
-            userId, authority);
+        UpdateStoreStatusResponseDto updateStoreStatus = storeService.updateStoreStatus(
+            storeId, userId, authority
+        );
 
         return new ResponseEntity<>(updateStoreStatus, HttpStatus.OK);
     }

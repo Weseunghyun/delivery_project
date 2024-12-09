@@ -1,7 +1,7 @@
 package com.example.delivery_project.user.service;
 
 import com.example.delivery_project.common.config.PasswordEncoder;
-import com.example.delivery_project.common.util.UtilValidation;
+import com.example.delivery_project.common.util.ValidationUtil;
 import com.example.delivery_project.user.dto.CreateUserRequestDto;
 import com.example.delivery_project.user.dto.CreateUserResponseDto;
 import com.example.delivery_project.user.dto.DeleteUserRequestDto;
@@ -10,8 +10,6 @@ import com.example.delivery_project.user.dto.LoginUserDto;
 import com.example.delivery_project.user.entity.User;
 import com.example.delivery_project.user.entity.UserWithdraw;
 import com.example.delivery_project.user.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,7 +24,7 @@ public class UserService {
 
     public CreateUserResponseDto createUser(CreateUserRequestDto requestDto) {
 
-        if (!UtilValidation.isValidPasswordFormat(requestDto.getPassword())) {
+        if (!ValidationUtil.isValidPasswordFormat(requestDto.getPassword())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                 "비밀번호는 최소 8자, 대소문자 포함한 영문, 숫자, 특수문자를 포함해야합니다.");
         }

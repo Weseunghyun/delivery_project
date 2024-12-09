@@ -71,16 +71,9 @@ public class OrderService {
         return new OrderResponseDto(order);
     }
 
-    public OrderResponseDto updateOrder(Long orderId, UpdateOrderRequestDto orderRequestDto, Long userId) {
+    public OrderResponseDto updateOrder(Long orderId, UpdateOrderRequestDto orderRequestDto) {
 
         Order findOrder = findOderById(orderId);
-
-        User findUser = userRepository.findByIdOrElseThrow(userId);
-        Authority findAuthority = findUser.getAuthority();
-
-        if (!findAuthority.equals(Authority.OWNER)) {
-            throw new OrderException(OrderErrorCode.ORDER_UPDATE_ONLY_ORDER);
-        }
 
         findOrder.updateOrderStatus(orderRequestDto);
 

@@ -1,5 +1,6 @@
 package com.example.delivery_project.order.controller;
 
+import com.example.delivery_project.common.constant.UserSession;
 import com.example.delivery_project.order.dto.OrderRequestDto;
 import com.example.delivery_project.order.dto.OrderResponseDto;
 import com.example.delivery_project.order.dto.UpdateOrderRequestDto;
@@ -22,10 +23,9 @@ public class OrderController {
     @PostMapping("/orders")
     public ResponseEntity<OrderResponseDto> userOrder(
         @RequestBody OrderRequestDto orderRequestDto,
-        HttpServletRequest request
+        @SessionAttribute(UserSession.USER_ID) Long userId
     ) {
-        HttpSession session = request.getSession();
-        Long userId = (Long) session.getAttribute("userId");
+
         OrderResponseDto orderFinished = orderService.orderFinished(orderRequestDto, userId);
 
         return new ResponseEntity<>(orderFinished, HttpStatus.CREATED);
@@ -34,12 +34,10 @@ public class OrderController {
     @PatchMapping("/orders/{orderId}")
     public ResponseEntity<OrderResponseDto> updateOrder(
         @PathVariable(name = "orderId") Long orderId,
-        @RequestBody UpdateOrderRequestDto updateorderRequestDto,
-        HttpServletRequest request
+        @RequestBody UpdateOrderRequestDto updateorderRequestDto
     ) {
-        HttpSession session = request.getSession();
-        Long userId = (Long) session.getAttribute("userId");
-        OrderResponseDto updateOrder = orderService.updateOrder(orderId, updateorderRequestDto, userId);
+
+        OrderResponseDto updateOrder = orderService.updateOrder(orderId, updateorderRequestDto);
 
         return new ResponseEntity<>(updateOrder, HttpStatus.OK);
     }
